@@ -4,8 +4,11 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -27,28 +30,39 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun MyApp(modifier: Modifier  = Modifier){
+fun MyApp(modifier: Modifier  = Modifier, names:List<String> = listOf("world", "compose")){
     Surface(
         modifier = modifier,
         color = MaterialTheme.colorScheme.background
     ) {
-        Greeting("Android")
+        Column(modifier = Modifier.padding(4.dp)) {
+            names.forEach {
+                Greeting(it)
+            }
+        }
     }
 
 }
 
 @Composable
 fun Greeting(name: String, modifier: Modifier  = Modifier) {
-    Surface(color = MaterialTheme.colorScheme.primary) {
-        Column(modifier = Modifier.padding(24.dp)) {
-            Text(text = "Hello ",)
-            Text(text = "$name!",)
+    Surface(
+        color = MaterialTheme.colorScheme.primary,
+        modifier = Modifier.padding(vertical = 4.dp, horizontal = 8.dp)) {
+        Row {
+            Column(modifier = Modifier.padding(24.dp).weight(1f)) {
+                Text(text = "Hello,")
+                Text(text = name)
+            }
+            ElevatedButton(onClick = { /*TODO*/ }) {
+                Text(text = "Show more")
+            }
         }
 
     }
 }
 
-@Preview(showBackground = true, name = "Text preview")
+@Preview(showBackground = true, name = "Text preview", widthDp = 320)
 @Composable
 fun GreetingPreview() {
     BasicsCodelabTheme {
