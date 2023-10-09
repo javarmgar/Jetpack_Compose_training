@@ -44,8 +44,33 @@ fun MyApp(modifier: Modifier  = Modifier, names:List<String> = listOf("world", "
 
 }
 
+
+//Coding state in the wrong way
+
+/*
+State in compose
+
+Compose apps transform data into UI by calling composable functions.
+If your data changes, compose re executes these functions with new data, creating an updated UI.
+This is called recomposition.
+
+Compose also looks at what data is needed by an individual composable so that it only needs to
+ recompose components whose data has changed and skip recomposing those that are not affected.
+
+
+Composable functions can execute frequently and in any order, you must not rely on thee ordering in
+ which the code is exectued, or on how many times this function will be recomposed.
+
+Here we don't have an state so this won't work as expected
+
+
+*/
+
+
 @Composable
-fun Greeting(name: String, modifier: Modifier  = Modifier) {
+
+fun Greeting(name: String) {
+    var expanded = false
     Surface(
         color = MaterialTheme.colorScheme.primary,
         modifier = Modifier.padding(vertical = 4.dp, horizontal = 8.dp)) {
@@ -54,8 +79,12 @@ fun Greeting(name: String, modifier: Modifier  = Modifier) {
                 Text(text = "Hello,")
                 Text(text = name)
             }
-            ElevatedButton(onClick = { /*TODO*/ }) {
-                Text(text = "Show more")
+            ElevatedButton(onClick = { expanded = !expanded }) {
+                Text(text = if (expanded) "Show less" else "Show more")
+                /*
+                The reason why mutating this variable does not trigger recompositions is that it's not being tracked by
+                compose. Also, each time greeting is called the variable will reset to false
+                 */
             }
         }
 
