@@ -6,7 +6,6 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.MaterialTheme
@@ -81,11 +80,12 @@ Use an API wrapper called Remember that will holds and remember the State variab
 
 fun Greeting(name: String) {
     var expanded: MutableState<Boolean> = remember{ mutableStateOf(false) }
+    val extraPadding = if(expanded.value) 48.dp else 0.dp
     Surface(
         color = MaterialTheme.colorScheme.primary,
         modifier = Modifier.padding(vertical = 4.dp, horizontal = 8.dp)) {
-        Row {
-            Column(modifier = Modifier.padding(24.dp).weight(1f)) {
+        Row(modifier = Modifier.padding(24.dp)) {
+            Column(modifier = Modifier.weight(1f).padding(bottom = extraPadding)) {
                 Text(text = "Hello,")
                 Text(text = name)
             }
