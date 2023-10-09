@@ -63,6 +63,9 @@ Composable functions can execute frequently and in any order, you must not rely 
 
 Here we don't have an state so this won't work as expected
 
+Next approach can be to use a new API State/MutableSate
+Whenever the data changes it will trigger updates to the UI to recompose the UI
+but... -> declaration within a composable function will recreate with initial value everytime it is recomposed
 
 */
 
