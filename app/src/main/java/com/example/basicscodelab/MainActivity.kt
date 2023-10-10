@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.MaterialTheme
@@ -107,11 +109,29 @@ fun OnboardingScreen(modifier: Modifier = Modifier, onContinueClicked: () -> Uni
     }
 }
 
+/*
+New use case: what if the list holds thousands of records, in view base we have list and recycler views
+list weren't performant with huge number of items,
+
+Problem:
+    one might be tempted to go straight forward with the same approach but it is not performant
+    Instead of
+    listOf("world", "compose")
+    what if we had
+    List(1000){ "$it"]) even the emulator can freeze up
+
+Solution: LazyColumn ( just like recyclerview) it renders only the visible items on screen,
+allowing performance gains when rendering a big list
+
+Note: LazyColumn and LazyRow are equivalent to RecyclerView in Android Views.
+
+
+ */
 @Composable
-fun Greetings(modifier: Modifier  = Modifier,  names:List<String> = listOf("world", "compose")) {
-    Column(modifier = modifier.padding(4.dp)) {
-        names.forEach {
-            Greeting(it)
+fun Greetings(modifier: Modifier  = Modifier,  names:List<String> = List(1000) { "$it" }) {
+    LazyColumn(modifier = modifier.padding(4.dp)) {
+        items( items = names){ name ->
+            Greeting(name = name)
         }
     }
 }
