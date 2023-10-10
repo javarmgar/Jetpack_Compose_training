@@ -3,7 +3,9 @@ package com.example.basicscodelab
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -186,7 +188,15 @@ fun Greeting(name: String) {
     It is a high level API composable, it returns a state object whose value will continuously be updated
     by the animation until it finishes. It takes a Dp target value.
      */
-    val extraPadding by animateDpAsState( if (expanded) 48.dp else 0.dp, label = "")
+    //animationSpec parameter that let us customize the animation
+    val extraPadding by animateDpAsState(
+        if (expanded) 48.dp else 0.dp,
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessLow
+        ),
+        label = "extraPaddingAnimation"
+    )
 
     Surface(
         color = MaterialTheme.colorScheme.primary,
@@ -194,7 +204,8 @@ fun Greeting(name: String) {
         Row(modifier = Modifier.padding(24.dp)) {
             Column(modifier = Modifier
                 .weight(1f)
-                .padding(bottom = extraPadding)) {
+                .padding(bottom = extraPadding.coerceAtLeast(0.dp))) {
+                // also making sure that padding is never negative, otherwise it could crash the app.
                 Text(text = "Hello,")
                 Text(text = name)
             }
