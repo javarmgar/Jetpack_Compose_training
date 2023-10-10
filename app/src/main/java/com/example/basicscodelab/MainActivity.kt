@@ -36,21 +36,85 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+/*
+ State Hoisting
+ In composable functions, the state that is read or modified by multiple functions should live in a common ancestor
+ To hoist = to lift or elevate ( we are lifting the state to the common ancestor of multiple composable functions that are
+    using the state
+
+ Advantages:
+ If not hoisting, and multiple composable functions use the same state then we would have to replicate the state
+ this will make the UI prone to errors
+     -State duplications
+     -introduction of bugs
+ -helps reusing composables
+ - makes composables substantially easier to test
+
+ SOURCE OF TRUTH belongs to whoever creates and controls the state
+ MyAPP - ST as it creates and controls the state
+ */
 @Composable
-fun MyApp(modifier: Modifier  = Modifier, names:List<String> = listOf("world", "compose")){
+fun MyApp(modifier: Modifier  = Modifier){
+    var shouldShowOnboarding: Boolean by remember { mutableStateOf(true) }
     Surface(
         modifier = modifier,
         color = MaterialTheme.colorScheme.background
     ) {
-        Column(modifier = Modifier.padding(4.dp)) {
-            names.forEach {
-                Greeting(it)
-            }
+        if (shouldShowOnboarding){
+            OnboardingScreen(onContinueClicked = { shouldShowOnboarding = false })
+            /*
+            How do we pass events up? By passing callbacks down.
+            Callbacks are functions that are passed as arguments to other functions and
+            get executed when the event occurs.
+            By passing a function and not a state to OnboardingScreen we make composable :
+                1. more reusable
+                2- state protection : other composables cannot mutate it
+            e.g. OnboardingScreenPreview sends an empty lambda function (it´s jsut a preview does not need
+            behaviour)
+            */
+        }else{
+            Greetings()
         }
     }
 
 }
 
+/*
+ We can have multiple previews at the same time
+
+Column attrs
+    verticalArrangement: Arrangement - values top, bottom, center
+    horizontalAlignment: Alignment - values start. end. centerHorizontally
+    by reserved keyword: kotlin feature to apply delefate pattern, it unwraps the MutableState(boolean) into
+    boolean it saves us from typing .value every time
+    shouldShowOnboarding is set to false but still pending the data source
+ */
+@Composable
+fun OnboardingScreen(modifier: Modifier = Modifier, onContinueClicked: () -> Unit){
+
+    Column(
+        modifier = modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ){
+        Text(text = "Welcome to the Basics Codelab!")
+        Button(
+            modifier = Modifier.padding(vertical = 24.dp),
+            onClick = onContinueClicked
+        ) {
+            Text(text = "Continue")
+        }
+    }
+}
+
+@Composable
+fun Greetings(modifier: Modifier  = Modifier,  names:List<String> = listOf("world", "compose")) {
+    Column(modifier = modifier.padding(4.dp)) {
+        names.forEach {
+            Greeting(it)
+        }
+    }
+}
 
 //Coding state in the wrong way
 
@@ -79,12 +143,9 @@ Use an API wrapper called Remember that will holds and remember the State variab
  1.- first time -  creation : it will create the variable and assign the value to the reference
  2- subsequent times - It will look for any value stored and will assign this value to the reference
 */
-
-
 @Composable
-
 fun Greeting(name: String) {
-    var expanded: MutableState<Boolean> = remember{ mutableStateOf(false) }
+    val expanded: MutableState<Boolean> = remember{ mutableStateOf(false) }
     val extraPadding = if(expanded.value) 48.dp else 0.dp
     Surface(
         color = MaterialTheme.colorScheme.primary,
@@ -108,39 +169,26 @@ fun Greeting(name: String) {
     }
 }
 
-@Preview(showBackground = true, name = "Text preview", widthDp = 320)
+@Preview
 @Composable
-fun GreetingPreview() {
+fun MyAppPreview() {
     BasicsCodelabTheme {
-        MyApp()
+        MyApp(Modifier.fillMaxSize())
+    }
+}
+@Preview(showBackground = true, name = "GreetingsPreview preview", widthDp = 320)
+@Composable
+fun GreetingsPreview() {
+    BasicsCodelabTheme {
+        Greetings()
     }
 }
 
-
-/*
- We can have multiple previews at the same time
-
-Column attrs
-    verticalArrangement: Arrangement - values top, bottom, center
-    horizontalAlignment: Alignment - values start. end. centerHorizontally
-    by reserved keyword: kotlin feature to apply delefate pattern, it unwraps the MutableState(boolean) into
-    boolean it saves us from typing .value every time
-    shouldShowOnboarding is set to false but still pending the data source
- */
+@Preview(showBackground = true, name = "GreetingPreview preview", widthDp = 320)
 @Composable
-fun OnboardingScreen(modifier: Modifier = Modifier){
-    var shouldShowOnboarding: Boolean by remember { mutableStateOf(true) }
-    Column(
-        modifier = modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ){
-        Text(text = "Welcome to the Basics Codelab!")
-        Button(
-            modifier = Modifier.padding(vertical = 24.dp),
-            onClick = { shouldShowOnboarding = false}) {
-            Text(text = "Continue")
-        }
+fun GreetingPreview() {
+    BasicsCodelabTheme {
+        Greeting("Javier")
     }
 }
 
@@ -151,6 +199,6 @@ Fixed height to verify content is aligned as stated
 @Composable
 fun OnboardingPreview(){
     BasicsCodelabTheme {
-        OnboardingScreen()
+        OnboardingScreen(onContinueClicked = { })
     }
 }
