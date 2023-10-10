@@ -19,7 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -57,7 +57,7 @@ class MainActivity : ComponentActivity() {
  */
 @Composable
 fun MyApp(modifier: Modifier  = Modifier){
-    var shouldShowOnboarding: Boolean by remember { mutableStateOf(true) }
+    var shouldShowOnboarding: Boolean by rememberSaveable { mutableStateOf(true) }
     Surface(
         modifier = modifier,
         color = MaterialTheme.colorScheme.background
@@ -163,9 +163,22 @@ Use an API wrapper called Remember that will holds and remember the State variab
  1.- first time -  creation : it will create the variable and assign the value to the reference
  2- subsequent times - It will look for any value stored and will assign this value to the reference
 */
+
+/*
+Persisting State
+
+1. variable boolean false does not trigger recomposition when it changes
+2. MutableState,State can hold a variables an trigger recomposition when value changes but it resets
+       the value in each recompositions
+3. Remember function can hold MutableState that holds var, and it can remember latest value before recomposition
+    happens, it survives recomposition however it won´t survive activity recreation ( conf. changes,
+    process death)
+4. RememberSaveable: Offers all the features of Remember functions and additionally it can survive
+activity recreation ( configuration changes and process death)
+ */
 @Composable
 fun Greeting(name: String) {
-    val expanded: MutableState<Boolean> = remember{ mutableStateOf(false) }
+    val expanded: MutableState<Boolean> = rememberSaveable{ mutableStateOf(false) }
     val extraPadding = if(expanded.value) 48.dp else 0.dp
     Surface(
         color = MaterialTheme.colorScheme.primary,
